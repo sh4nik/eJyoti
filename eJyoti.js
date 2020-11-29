@@ -138,11 +138,12 @@ function get_positions(date, time, tza, lat, lon) {
   calc_position(false);
 
   return {
-    positions: mygrahas.map(({ degree, name, ra, zodiac }) => ({
+    positions: mygrahas.map(({ degree, name, ra, zodiac, geoCentricCoords }) => ({
       degree,
       name,
       ra,
       zodiac,
+      geoCentricCoords,
     })),
     moonPhase: calc_tithi(false)
   };
@@ -243,7 +244,8 @@ function myplanets(
   sad_house,
   good_friend,
   bad_friend,
-  transitdeg
+  transitdeg,
+  geoCentricCoords,
 ) {
   this.name = name;
   this.index = index;
@@ -259,6 +261,7 @@ function myplanets(
   this.good_friend = good_friend;
   this.bad_friend = bad_friend;
   this.transitdeg = transitdeg;
+  this.geoCentricCoords = geoCentricCoords;
   this.house = "";
   this.zodiac = "";
   this.degree = "";
@@ -782,8 +785,9 @@ function calc_planets_position() {
     "4,6,7,8,12",
     "Mo,Ma,Ju",
     "Sa,Ve",
-    calc_vsop87(1, jdnow) - aynow
-  ); //calc_ra(0) //0
+    calc_vsop87(1, jdnow) - aynow,
+    calc_ra(0),
+  );
 
   mygrahas[2] = new myplanets(
     "Mo",
@@ -816,7 +820,8 @@ function calc_planets_position() {
     "2,4,6,12",
     "Su,Mo,Ju",
     "Me",
-    calc_vsop87(3, jdnow) - aynow
+    calc_vsop87(3, jdnow) - aynow,
+    calc_ra(1),
   ); //1
 
   mygrahas[4] = new myplanets(
@@ -833,7 +838,8 @@ function calc_planets_position() {
     "2,4,8,9,12",
     "Ve,Su",
     "Mo",
-    calc_vsop87(4, jdnow) - aynow
+    calc_vsop87(4, jdnow) - aynow,
+    calc_ra(2),
   ); //2
 
   mygrahas[5] = new myplanets(
@@ -850,7 +856,8 @@ function calc_planets_position() {
     "2,11",
     "Su,Mo,Ma",
     "Ve,Me",
-    calc_vsop87(5, jdnow) - aynow
+    calc_vsop87(5, jdnow) - aynow,
+    calc_ra(3),
   ); //3
 
   mygrahas[6] = new myplanets(
@@ -867,7 +874,8 @@ function calc_planets_position() {
     "3,6,8,10",
     "Sa,Me",
     "Su,Mo",
-    calc_vsop87(6, jdnow) - aynow
+    calc_vsop87(6, jdnow) - aynow,
+    calc_ra(4),
   ); //4
 
   mygrahas[7] = new myplanets(
@@ -884,7 +892,8 @@ function calc_planets_position() {
     "4,5,8,9,12",
     "Me,Ve",
     "Su,Mo,Ma",
-    calc_vsop87(7, jdnow) - aynow
+    calc_vsop87(7, jdnow) - aynow,
+    calc_ra(5),
   ); //5
 
   mygrahas[8] = new myplanets(
@@ -1158,7 +1167,12 @@ function calc_ra(p) {
    *  dec = Math.atan(zeq/Math.sqrt(xeq*xeq + yeq*yeq))*DEGS; */
   /*  r   = Math.sqrt(xeq*xeq + yeq*yeq + zeq*zeq);           */
 
-  return ra;
+  return {
+    x: xeq,
+    y: yeq,
+    z: zeq,
+  };
+  // return ra;
 }
 
 function true_anomaly(M, e) {
